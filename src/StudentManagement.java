@@ -20,29 +20,33 @@ public class StudentManagement {
 
             while (!exit) {
                 System.out.println(ANSI_CYAN + "\nMenu:");
-                System.out.println(ANSI_YELLOW + "1. List Students");
-                System.out.println("2. Add Student");
-                System.out.println("3. Update Student");
-                System.out.println("4. Delete Student");
-                System.out.println(ANSI_RED + "5. Exit" + ANSI_RESET);
+                System.out.println("1. filter students with courses");
+                System.out.println(ANSI_YELLOW + "2. List Students");
+                System.out.println("3. Add Student");
+                System.out.println("4. Update Student");
+                System.out.println("5. Delete Student");
+                System.out.println(ANSI_RED + "6. Exit" + ANSI_RESET);
                 System.out.print(ANSI_GREEN + "Enter your choice: " + ANSI_RESET);
                 int choice = scanner.nextInt();
                 scanner.nextLine();  // Consume newline character
 
                 switch (choice) {
                     case 1:
-                        listStudents(connection);
+                        studentWithCourse(connection);
                         break;
                     case 2:
-                        addStudent(connection, scanner);
+                        listStudents(connection);
                         break;
                     case 3:
-                        updateStudent(connection, scanner);
+                        addStudent(connection, scanner);
                         break;
                     case 4:
-                        deleteStudent(connection, scanner);
+                        updateStudent(connection, scanner);
                         break;
                     case 5:
+                        deleteStudent(connection, scanner);
+                        break;
+                    case 6:
                         exit = true;
                         break;
                     default:
@@ -52,6 +56,38 @@ public class StudentManagement {
         } catch (SQLException e) {
             System.out.println(ANSI_RED + "Error executing SQL query." + ANSI_RESET);
             e.printStackTrace();
+        }
+    }
+
+    private static void studentWithCourse(Connection connection) throws SQLException {
+        String sqlQuery = "SELECT students.student_id, " +
+                "students.first_name, " +
+                "students.last_name, " +
+                "courses.course_id, " +
+                "courses.course_name, " +
+                "courses.instructor " +
+                "FROM students " +
+                "JOIN student_course_relationship ON students.student_id = student_course_relationship.student_id " +
+                "JOIN courses ON student_course_relationship.course_id = courses.course_id";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)) {
+
+            System.out.println(ANSI_CYAN + "\nList of Students with Courses:" + ANSI_RESET);
+
+            while (resultSet.next()) {
+                int studentId = resultSet.getInt("student_id");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                int courseId = resultSet.getInt("course_id");
+                String courseName = resultSet.getString("course_name");
+                String instructor = resultSet.getString("instructor");
+                System.out.println(ANSI_YELLOW + "Student ID: " + studentId +
+                        ", Name: " + firstName + " " + lastName +
+                        ", Course ID: " + courseId +
+                        ", Course Name: " + courseName +
+                        ", Instructor: " + instructor + ANSI_RESET);
+
+            }
         }
     }
 

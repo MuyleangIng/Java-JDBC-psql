@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat;
 
 public class RetrieveDataExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/postgres?currentSchema=prod";
         String user = "postgres";
         String password = "080720";
 
